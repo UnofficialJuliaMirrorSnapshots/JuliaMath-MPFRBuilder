@@ -1,0 +1,37 @@
+language: julia
+os:
+  - linux
+julia:
+  - 0.6
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=true
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'Pkg.clone("https://github.com/JuliaPackaging/BinaryBuilder.jl"); Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for JuliaMath/MPFRBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: h2KDgJ3hQ5DwPKDQ4ElmUV622J/fqyyxgra3poCVjZVrmLZCmGRH2pyQFPTgs01zhX8c/lx26LP/OLZ9JhKIVqv5iWE1hL+xAGVMvNOPij7TKq2kTRd/vExP5PiIUaYPksPljJaQRmATMt24/L0tB6xmGhjWuDXd6alylwGIasFCi1kmjYvlnxeXJ0gS1AEy2RQJWOR4jvj3yGLtwdk308ShPJeDK6fSIotrcLL2oEA/CuflID/6bKdMMOcOoBiBtT99VK1/g+6ru+eq5+g8ViVCXPo8I9omwyfhSEa6Sx69fbNbvdDNWkvulrfs3inDtcC2yN1Du4GiiUPuh1iz/wS/OyOOlMnUlJEZI3tqQQIS2t02D9gaqqlrJWGS8m+prhaoyFi8+cxag0nHwfjpkMpka51EE06+AQ1aN1bsqr0jxLC/5NFLru7SGBmAAIE0il0wugfi4Tnw5QhAlUIB16WulFCwfkSU90GxBvLPeKF0nJR2qK6dchewCEfrzoUBGjzeGse4IkTnpzHhqhLs4sVL2yvKa4m2KXzNv6o/il7JCqkRYjsDyywHnElryw3HazRLCYDXyP+w6QBInqAzn1HCiTLvkLQS5bTRXNGgqCNy0WMknbUIE1iUsdYsHkvcokGJj3AJyDO40zD8baAhyZ7uVxZ/mteZHoQB5MzmZlA=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: JuliaMath/MPFRBuilder
+        tags: true
